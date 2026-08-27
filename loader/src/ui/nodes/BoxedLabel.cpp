@@ -6,6 +6,7 @@ using namespace geode::prelude;
 class BoxedLabel::Impl final {
 public:
     float m_width = 0.f;
+    float m_scale = 1.f;
     bool m_lockWidth = false;
 
     Label* m_label = nullptr;
@@ -23,34 +24,42 @@ bool BoxedLabel::init(std::string text, ZStringView font, float width) {
     this->setAnchorPoint({0.5f, 0.5f});
 
     m_impl->m_label = Label::createRich(std::move(text), font);
-    m_impl->m_label->setZOrder(1);
-    m_impl->m_label->setAlignment(Label::Alignment::Center);
 
     if (width > 0.f) m_impl->m_label->setMaxWidth(width);
 
+    m_impl->m_label->setAlignment(Label::Alignment::Center);
+
     m_impl->m_bg = NineSlice::create("white-square.png"_spr);
+    m_impl->m_bg->setZOrder(0);
     m_impl->m_bg->setOpacity(100);
     m_impl->m_bg->setColor({0, 0, 0});
 
     this->resize();
 
-    this->addChildAtPosition(m_impl->m_label, Anchor::Center, {});
-    this->addChildAtPosition(m_impl->m_bg, Anchor::Center, {});
+    this->addChildAtPosition(m_impl->m_label, Anchor::Center);
+    this->addChildAtPosition(m_impl->m_bg, Anchor::Center);
+
+    m_impl->m_width = m_impl->m_label->getScaledContentWidth();
 
     return true;
 };
 
 void BoxedLabel::resize() {
+    if (m_impl->m_width <= 0.f) m_impl->m_width = m_impl->m_label->getScaledContentWidth();
+    m_impl->m_label->setMaxWidth(m_impl->m_width / m_impl->m_scale);
+
     this->setContentSize({
-        (m_impl->m_lockWidth ? m_impl->m_width : m_impl->m_label->getScaledContentWidth()) + 8.75f,
+        (m_impl->m_lockWidth ? m_impl->m_width : m_impl->m_label->getScaledContentWidth()) + 5.f,
         m_impl->m_label->getScaledContentHeight() + 5.f,
     });
+
     m_impl->m_bg->setContentSize(this->getScaledContentSize());
+
     this->updateLayout();
 };
 
 void BoxedLabel::setText(std::string text) {
-    m_impl->m_label->setText(std::move(text));
+    m_impl->m_label->setRichText(std::move(text));
     this->resize();
 };
 
@@ -60,7 +69,9 @@ void BoxedLabel::setFont(ZStringView font) {
 };
 
 void BoxedLabel::setTextScale(float scale) {
+    m_impl->m_scale = scale;
     m_impl->m_label->setScale(scale);
+
     this->resize();
 };
 
@@ -70,8 +81,6 @@ void BoxedLabel::setTextAlignment(Label::Alignment alignment) {
 
 void BoxedLabel::setMaxLabelWidth(float width) {
     m_impl->m_width = width;
-    m_impl->m_label->setMaxWidth(width);
-
     this->resize();
 };
 
