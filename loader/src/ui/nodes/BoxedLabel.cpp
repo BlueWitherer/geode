@@ -47,7 +47,7 @@ bool BoxedLabel::init(std::string text, ZStringView font, float width) {
 
 void BoxedLabel::resize() {
     if (m_impl->m_width <= 0.f) m_impl->m_width = m_impl->m_label->getScaledContentWidth();
-    m_impl->m_label->setMaxWidth(m_impl->m_width / m_impl->m_scale);
+    m_impl->m_label->setMaxWidth(m_impl->m_width);
 
     this->setContentSize({
         (m_impl->m_lockWidth ? m_impl->m_width : m_impl->m_label->getScaledContentWidth()) +
