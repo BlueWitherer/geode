@@ -7,7 +7,7 @@ class BoxedLabel::Impl final {
 public:
     float m_width = 0.f;
     float m_scale = 1.f;
-    float m_padding = 2.5f;
+    float m_padding = 5.f;
     bool m_lockWidth = false;
 
     Label* m_label = nullptr;
@@ -40,15 +40,10 @@ bool BoxedLabel::init(std::string text, ZStringView font, float width) {
     this->addChildAtPosition(m_impl->m_label, Anchor::Center);
     this->addChildAtPosition(m_impl->m_bg, Anchor::Center);
 
-    m_impl->m_width = m_impl->m_label->getScaledContentWidth();
-
     return true;
 };
 
 void BoxedLabel::resize() {
-    if (m_impl->m_width <= 0.f) m_impl->m_width = m_impl->m_label->getScaledContentWidth();
-    m_impl->m_label->setMaxWidth(m_impl->m_width);
-
     this->setContentSize({
         (m_impl->m_lockWidth ? m_impl->m_width : m_impl->m_label->getScaledContentWidth()) +
             m_impl->m_padding,
@@ -83,6 +78,8 @@ void BoxedLabel::setTextAlignment(Label::Alignment alignment) {
 
 void BoxedLabel::setMaxLabelWidth(float width) {
     m_impl->m_width = width;
+    m_impl->m_label->setMaxWidth(width);
+
     this->resize();
 };
 
