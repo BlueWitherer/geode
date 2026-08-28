@@ -49,6 +49,9 @@ namespace geode {
         /// Set the maximum width of the label
         void setMaxLabelWidth(float width);
 
+        /// Change the padding between the edges of the box and the text label
+        void setPadding(float padding);
+
         /// Change the color of the NineSlice surrounding the text label
         void setBGColor(cocos2d::ccColor3B const& color);
 
@@ -56,9 +59,10 @@ namespace geode {
         void setBGOpacity(GLubyte opacity);
 
         /// Lock the box at the maximum width if set, instead of dynamically expanding with the label
-        void setLockBGWidth(bool lock);
+        void lockBGWidth(bool lock);
 
         float getMaxLabelWidth() const noexcept;
+        float getPadding() const noexcept;
         bool isBGWidthLocked() const noexcept;
 
         Label* getLabelNode() const noexcept;

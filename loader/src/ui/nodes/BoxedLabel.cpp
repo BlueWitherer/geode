@@ -7,6 +7,7 @@ class BoxedLabel::Impl final {
 public:
     float m_width = 0.f;
     float m_scale = 1.f;
+    float m_padding = 2.5f;
     bool m_lockWidth = false;
 
     Label* m_label = nullptr;
@@ -30,7 +31,7 @@ bool BoxedLabel::init(std::string text, ZStringView font, float width) {
     m_impl->m_label->setAlignment(Label::Alignment::Center);
 
     m_impl->m_bg = NineSlice::create("white-square.png"_spr);
-    m_impl->m_bg->setZOrder(0);
+    m_impl->m_bg->setZOrder(-1);
     m_impl->m_bg->setOpacity(100);
     m_impl->m_bg->setColor({0, 0, 0});
 
@@ -49,8 +50,9 @@ void BoxedLabel::resize() {
     m_impl->m_label->setMaxWidth(m_impl->m_width / m_impl->m_scale);
 
     this->setContentSize({
-        (m_impl->m_lockWidth ? m_impl->m_width : m_impl->m_label->getScaledContentWidth()) + 5.f,
-        m_impl->m_label->getScaledContentHeight() + 5.f,
+        (m_impl->m_lockWidth ? m_impl->m_width : m_impl->m_label->getScaledContentWidth()) +
+            m_impl->m_padding,
+        m_impl->m_label->getScaledContentHeight() + m_impl->m_padding,
     });
 
     m_impl->m_bg->setContentSize(this->getScaledContentSize());
@@ -84,6 +86,11 @@ void BoxedLabel::setMaxLabelWidth(float width) {
     this->resize();
 };
 
+void BoxedLabel::setPadding(float padding) {
+    m_impl->m_padding = padding;
+    this->resize();
+};
+
 void BoxedLabel::setBGColor(ccColor3B const& color) {
     m_impl->m_bg->setColor(color);
 };
@@ -92,13 +99,17 @@ void BoxedLabel::setBGOpacity(GLubyte opacity) {
     m_impl->m_bg->setOpacity(opacity);
 };
 
-void BoxedLabel::setLockBGWidth(bool lock) {
+void BoxedLabel::lockBGWidth(bool lock) {
     m_impl->m_lockWidth = lock;
     this->resize();
 };
 
 float BoxedLabel::getMaxLabelWidth() const noexcept {
     return m_impl->m_width;
+};
+
+float BoxedLabel::getPadding() const noexcept {
+    return m_impl->m_padding;
 };
 
 bool BoxedLabel::isBGWidthLocked() const noexcept {
